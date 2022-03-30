@@ -1,23 +1,19 @@
-from django.http import Http404
-from rest_framework import viewsets, generics, status
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Post, Category
-from .serializers import BlogPostSerializer, BlogCategorySerializer
+
+from .models import Post
+from .serializers import BlogPostSerializer
 
 
 class BlogGetPost(APIView):
-    @staticmethod
-    def get_object(pk):
-        try:
-            return Post.objects.get(pk=pk)
-        except Post.DoesNotExist:
-            raise Http404
-
     def get(self, request, pk, format=None):
-        post = self.get_object(pk)
-        serializer = BlogPostSerializer(post)
-        return Response(serializer.data, status.HTTP_200_OK)
+        try:
+            post = Post.objects.get(published=True, pk=pk)
+            serializer = BlogPostSerializer(post)
+            return Response(serializer.data, status.HTTP_200_OK)
+        except Post.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, format=None):
         serializer = BlogPostSerializer(data=request.data)
@@ -27,11 +23,17 @@ class BlogGetPost(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
-        post = self.get_object(pk)
-        post.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            post = Post.objects.get(published=True, pk=pk)
+            post.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Post.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class BlogListPosts(generics.ListAPIView):
+    """
+    API de listagem de postagens
+    """
     queryset = Post.objects.filter(published=True)
     serializer_class = BlogPostSerializer

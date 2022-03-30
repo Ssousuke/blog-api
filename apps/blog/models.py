@@ -14,7 +14,7 @@ class Category(BaseModel):
     name = models.CharField(max_length=80)
 
     def __str__(self) -> str:
-        return self.name
+        return f'{self.name}'
 
     class Meta:
         verbose_name = 'Category'
@@ -33,7 +33,7 @@ class Post(BaseModel):
     published = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return self.title
+        return f'{self.title}'
 
     class Meta:
         verbose_name = 'Post'
