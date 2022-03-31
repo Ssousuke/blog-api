@@ -45,13 +45,6 @@ DEBUG
 ...
 ```
 
-For production environments...
-
-```sh
-npm install --production
-NODE_ENV=production node app
-```
-
 ## Migrações
 
 Após a configuração do ambiente, você pode em seguida fazer o processo de migração.
